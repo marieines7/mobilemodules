@@ -1,75 +1,126 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import Header from '@/components/Header';
+import { useWeather } from '@/components/WeatherContext'; // Import du contexte météo
+import { LineChart } from "react-native-gifted-charts";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export function CurrentTab() {
+  const { data } = useWeather(); // Pas besoin de fetchWeather ici
+  
+  // LOG POUR DEBUG
+  console.log('=== CURRENTTAB RENDER ===');
+  console.log('data.loading:', data.loading);
+  console.log('data.error:', data.error);
+  console.log('data.current existe?', !!data.current);
+  console.log('data.current:', data.current);
+  console.log('data.location:', data.location);
 
-export default function HomeScreen() {
+  if (data.loading) return <Text style={styles.center}>Chargement...</Text>;
+  
+  if (data.error) return (
+    <View style={styles.container}>
+      <Text style={styles.error}>{data.error}</Text>
+    </View>
+  );
+
+  // Changez temporairement cette condition pour plus de détails
+  if (!data.current || !data.current.temp || data.current.temp === 0) {
+    console.log('=== CONDITION: PAS DE DONNÉES ===');
+    console.log('!data.current:', !data.current);
+    console.log('!data.current.temp:', !data.current?.temp);
+    console.log('data.current.temp === 0:', data.current?.temp === 0);
+    
+    return (
+      <View style={styles.container}>
+        <Text style={styles.center}>Recherchez une ville pour voir la météo</Text>
+      </View>
+    );
+  }
+
+  // Si on arrive ici, on a des données météo !
+  console.log('=== AFFICHAGE MÉTÉO ===');
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+         {data.displayQuery && (
+        <Text style={styles.tabInfo}>
+          Currently - {data.displayQuery}
+        </Text>
+      )}
+      <Text style={styles.location}>
+        {data.location.city}, {data.location.region}, {data.location.country}
+      </Text>
+      <Text style={styles.temp}>{data.current.temp}°C</Text>
+      <Text style={styles.desc}>{data.current.desc}</Text>
+      <Text style={styles.wind}>Vent: {data.current.wind} km/h</Text>
+      
+      {/* Affichage debug des données */}
+      <Text style={styles.debug}>
+        Debug: {data.hourly.length} prévisions horaires, {data.daily.length} prévisions quotidiennes
+      </Text>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+// Composant principal
+export default function Currently() {
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Header />
+        <CurrentTab />
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
+
+const styles = {
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  location: {
+    fontSize: 18,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  temp: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    textAlign: 'center',
+    color: '#333',
   },
-});
+  desc: {
+    fontSize: 20,
+    color: '#888',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  wind: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  center: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 18,
+    color: '#999',
+  },
+  error: {
+    textAlign: 'center',
+    fontSize: 18,
+    color: '#ff0000',
+    marginBottom: 20,
+  },
+  debug: {
+    fontSize: 12,
+    color: '#aaa',
+    textAlign: 'center',
+    marginTop: 20,
+  }
+};

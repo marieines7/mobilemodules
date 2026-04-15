@@ -5,8 +5,9 @@ import { LocationButton } from '@/utils/Location';
 import SimpleSearchBar from './SimpleSearchBar';
 
 export default function WeatherSearchBar() {
-  const { fetchWeather } = useWeather();
+  //const { fetchWeather } = useWeather();
 
+  const { fetchWeather, setQuery } = useWeather();
   const searchCities = async (query) => {
     const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${query}&count=5&language=en&format=json`);
     return (await response.json()).results || [];
@@ -27,6 +28,7 @@ export default function WeatherSearchBar() {
         inputStyle={s.input}
         dropdownStyle={s.dropdown}
         containerStyle={s.searchContainer}
+         onChangeText={(text) => setQuery(text)}
       />
       <LocationButton onLocationObtained={({ coordinates }) => fetchWeather(coordinates.latitude, coordinates.longitude)} />
     </View>

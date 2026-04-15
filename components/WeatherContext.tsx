@@ -70,6 +70,7 @@ const WeatherContext = createContext<{
   data: WeatherData;
   fetchWeather: (lat: number, lon: number) => Promise<void>;
   loadDummyData: () => void;
+  setQuery: (query: string) => void;
 } | undefined>(undefined);
 
 export const WeatherProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -83,6 +84,14 @@ export const WeatherProvider: React.FC<{ children: ReactNode }> = ({ children })
     query: '',
     searchType: null,
   });
+
+const setQuery = (query: string) => {
+  setData(prev => ({ 
+    ...prev,          // On garde la météo actuelle, le chargement, etc.
+    query: query,     // On met à jour le texte saisi
+    searchType: 'text' // On bascule le type en "text" car l'utilisateur tape
+  }));
+};
 
   // Fonction pour charger les données factices
   const loadDummyData = () => {
@@ -170,7 +179,7 @@ const today = new Date().toISOString().split("T")[0];
   };
 
   return (
-    <WeatherContext.Provider value={{ data, fetchWeather, loadDummyData }}>
+    <WeatherContext.Provider value={{ data, fetchWeather, loadDummyData, setQuery }}>
       {children}
     </WeatherContext.Provider>
   );

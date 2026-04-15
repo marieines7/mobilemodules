@@ -30,6 +30,17 @@ export default function Today() {
     [hourlyData]
   );
 };
+const getDisplayLocation = () => {
+    if (data.searchType === 'geolocation') {
+      return "📍 Ma position actuelle";
+    }
+    if (data.query) {
+      return `Recherche : ${data.query}`;
+    }
+    return `${data.location.city}, ${data.location.country}`;
+  };
+
+  const locationTitle = getDisplayLocation();
 
 
   return (
@@ -37,7 +48,7 @@ export default function Today() {
           <SafeAreaView style={{ flex: 1 }}>
             <Header />
     <View style={styles.container}>
-      <Text style={styles.title}>Today</Text>
+      <Text style={styles.title}>Today {locationTitle}</Text>
       <Text style={styles.location}>{data.location.city}, {data.location.region}, {data.location.country}</Text>
       <LineChart data={useChartData(data.hourly)} />
       {/* <ScrollView horizontal showsHorizontalScrollIndicator={false}> */}

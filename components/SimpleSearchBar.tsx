@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, FlatList, TouchableWithoutFeedback, Dimensions } from 'react-native';
 
-export default function SimpleSearchBar({ placeholder = "Rechercher...", onSearch, onSelect, renderItem, inputStyle, dropdownStyle, itemStyle, containerStyle }) {
+export default function SimpleSearchBar({ placeholder = "Rechercher...", onChangeText, onSearch, onSelect, renderItem, inputStyle, dropdownStyle, itemStyle, containerStyle }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const { width, height } = Dimensions.get('window');
 
   const handleSearch = async (text) => {
     setQuery(text);
+    if (onChangeText) {
+      onChangeText(text); 
+    }
     if (text.length > 2 && onSearch) {
       const data = await onSearch(text);
       setResults(data || []);

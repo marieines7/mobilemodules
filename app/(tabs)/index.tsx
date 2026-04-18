@@ -13,7 +13,7 @@ export default function CurrentTab() {
 
 const getDisplayLocation = () => {
     if (data.searchType === 'geolocation') {
-      return "\n📍 Ma position actuelle";
+      return "\nGeolocation";
     }
     if (data.query) {
       return `\n${data.query}`;

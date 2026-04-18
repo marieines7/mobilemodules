@@ -1,6 +1,4 @@
 import * as Location from 'expo-location';
-// import * as Camera from 'expo-camera';
-// import * as Notifications from 'expo-notifications';
 import { Alert, Platform, Linking } from 'react-native';
 
 const PERMISSIONS = {
@@ -9,16 +7,6 @@ const PERMISSIONS = {
     request: () => Location.requestForegroundPermissionsAsync(),
     check: () => Location.getForegroundPermissionsAsync(),
   },
-  // camera: {
-  //   name: 'Appareil photo',
-  //   request: () => Camera.requestCameraPermissionsAsync(),
-  //   check: () => Camera.getCameraPermissionsAsync(),
-  // },
-  // notifications: {
-  //   name: 'Notifications',
-  //   request: () => Notifications.requestPermissionsAsync(),
-  //   check: () => Notifications.getPermissionsAsync(),
-  // },
 };
 
 export const usePermissions = () => {
